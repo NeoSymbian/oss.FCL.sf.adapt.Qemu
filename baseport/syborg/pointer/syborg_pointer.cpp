@@ -10,7 +10,7 @@
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
-* NeoSymbian - scale x like y: QEMU's absolute pointer spans 0..0x7FFF on both axes (2026).
+* NeoSymbian - exact scaling of QEMU's absolute 0..0x7FFF pointer to any screen size (2026).
 *
 * Description: Minimalistic pointer driver
 *
@@ -116,8 +116,7 @@ void TPointerRv::Init3()
 
   ix = iy = 0;
 
-  iXFactor = Fixed(iScreenWidth) / Fixed(0x8000);	// was 0x6000: taps landed 4/3 too far right
-  iYFactor = Fixed(iScreenHeight) / Fixed(0x8000);
+  // QEMU's absolute pointer spans 0..0x7FFF on both axes; Process() scales it to the screen with integers.
 
   iFifoPos = iFifoCount = 0;
 
@@ -137,8 +136,10 @@ void TPointerRv::Process(TPointerRv *i, struct TPointerRv::PData *pd)
   //  i->ix += pd->x;
   //  i->iy += pd->y;
 
-  i->ix = int(Fixed(pd->x) * i->iXFactor);
-  i->iy = int(Fixed(pd->y) * i->iYFactor);
+  // Integer maths (x, y < 0x8000, sizes <= 4096: fits 32 bits). The old Fixed (24.8) factors lost precision -- exact
+  // only for 768x640 -- and x used 0x6000, so it ran 4/3 too far.
+  i->ix = pd->x * i->iScreenWidth / 0x8000;
+  i->iy = pd->y * i->iScreenHeight / 0x8000;
 
   switch(pd->but)
 	{
