@@ -2,14 +2,15 @@
 * Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
-* under the terms of the License "Eclipse Public License v1.0"
+* under the terms of the License "Eclipse Public License v2.0"
 * which accompanies this distribution, and is available
-* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+* at the URL "https://www.eclipse.org/legal/epl-2.0/".
 *
 * Initial Contributors:
 * Nokia Corporation - initial contribution.
 *
 * Contributors:
+* NeoSymbian - scale x like y: QEMU's absolute pointer spans 0..0x7FFF on both axes (2026).
 *
 * Description: Minimalistic pointer driver
 *
@@ -115,7 +116,7 @@ void TPointerRv::Init3()
 
   ix = iy = 0;
 
-  iXFactor = Fixed(iScreenWidth) / Fixed(0x6000);
+  iXFactor = Fixed(iScreenWidth) / Fixed(0x8000);	// was 0x6000: taps landed 4/3 too far right
   iYFactor = Fixed(iScreenHeight) / Fixed(0x8000);
 
   iFifoPos = iFifoCount = 0;
